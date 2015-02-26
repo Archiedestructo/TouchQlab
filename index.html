@@ -37,7 +37,8 @@
 
 <h3>
 <a name="support-or-contact" class="anchor" href="#support-or-contact"><span class="octicon octicon-link"></span></a>Running and Customizing.</h3>
-
+<p>The first thing to note is that TouchQlab uses ports 54000 (Listen) and 54001 (Respond) for communication. This is meant to mirror Qlab's 53000 and 53001 ports.</p>
+<p>Second, all device messages are sent to Qlab. Message are sent back to the device upon Qlab's "Update" reply (this occurs when anything is changed).</p>
 <p>Currently, to run the code you'll need to open the script in IDLE and manually run the script. While you're there, feel free to <a href="https://github.com/Archiedestructo/TouchQlab">visit the GitHub page</a> or <a href="https://github.com/Archiedestructo/TouchQlab/zipball/master">download the Zip</a> and alter any code you want. Everything is written in python which can be edited via IDLE. After downloading the code you'll need to install one python library.
 <br/><br/>
 Open Applications/Utilities/Terminal and copy-paste each command one by one.</p>
@@ -59,15 +60,52 @@ $ sudo IDLE
 From here, you can open the python script (OSC Script.py), alter, edit and run the code. 
 
 <h3>
-<a name="support-or-contact" class="anchor" href="#support-or-contact"><span class="octicon octicon-link"></span></a>Functions - SendQlabMessage(message, values) and SendDeviceMessage(message, values)</h3>
+<a name="support-or-contact" class="anchor" href="#support-or-contact"><span class="octicon octicon-link"></span></a>Functions - SendQlabMessage(message, values)</h3>
 
 <p>The script will detect open Qlab Workspaces and grab hold of the first one it detects. Once this is done you can use the SendQlabMessage function to send Qlab messages. Simply give it an OSC message and values. If you're unsure what OSC message Qlab will accept, visit <a href="http://figure53.com/qlab/docs/osc-api/">Figure53's OSC API.</a> Here are a few examples of sending  </p>
 <pre><code>
 SendQlabMessage("/go", None) #Send Qlab the GO command for the currently selected cue
 SendQlabMessage("/cue/selected/name", "Some New Name") #Set the name of the currently selected cue
-SendQlabMessage("/cue/selected/name", "Some New Name") #Set the name of the currently selected cue
 SendQlabMessage("/cue/selected/sliderLevel, (0, -20)) #Set the master fader of the currently selected cue to -20dB. Multiple values can be sent as a tuple
 </code></pre>
+
+<h3>
+<a name="support-or-contact" class="anchor" href="#support-or-contact"><span class="octicon octicon-link"></span></a>Functions - SendDeviceMessage(message, values)</h3>
+
+<p>After having found a Qlab Workspace, the script will listen for a device such as TouchOSC. To grab hold of the device IP, the script simply needs to hear a command, any command, then you can begin sending messages back to the device. Here are some examples </p>
+<pre><code>
+SendDeviceMessage("/cue/selected/name", "Some New Name") #Display the name in the label with the address "/cue/selected/name"
+SendQlabMessage("/cue/selected/translation", (15.4, -20)) #Set the XY-Fader position. Multiple values can be sent as a tuple
+</code></pre>
+
+<h3>
+<a name="support-or-contact" class="anchor" href="#support-or-contact"><span class="octicon octicon-link"></span></a>Functions - Server_handler(addr, tags, data, source)</h3>
+
+<p>This is the handler that receives commands from the device (i.e. TouchOSC). Of course all this code is dependent upon what you're actually sending from your device. An application such as TouchOSC allows you define exactly what messages / addresses are being sent to Qlab. This can then assist in cleaning up some odd or unique messages. A few things to note ...</p>
+<p>If your device address uses "{WorkspaceID}", that section will be replaced by the actual WorkspaceID that is being used.</p>
+<p>Next there is a chunk for commands to be ignored such as the TouchOSC "/page" command which occurs when you change from one page of buttons to another.</p>
+<p>The following section listens for value-less commands. These are often buttons which typically send two values, 1 for pressed, 0 for released; here messages with the value of 0 are ignored in order to prevent a "double tap".</p>
+<pre><code>
+This is by no means a comprehensive list of all the possible value-less commands Qlab will accept. To add another such as "/workspace/{id}/toggleFullScreen" simply add another chunk in the elif command.
+elif (("/previous" in addr) or
+            <b>("/toggleFullScreen" in addr) or</b>
+            ...
+            ("/selected/stop" in addr)):
+</code></pre>
+<p>The subsequent sections are special case scenarios and simple pass throughs. Again, you can easily add code here to bridge the gap between Qlab and your specific setup.</p>
+
+<h3>
+<a name="support-or-contact" class="anchor" href="#support-or-contact"><span class="octicon octicon-link"></span></a>Functions - Listener_handler(addr, tags, data, source)</h3>
+
+<p>This is the handler that sends commands back to your device. This is the portion that simplifies Qlab's response so that your device can understand the data being returned. Whenever an update occurs in Qlab, this script will request new data via the RequestValuesForKeys() method (found at the top of the script). The keys requested is by no means a comprehensive list. Feel free to add keys to this list as needed.</p>
+<p>The reply is then divvied in the "/valuesForKeys" section of this function. The JSON code is decoded and parsed for each individual key. The value is then sent as a simple message back to the device. Add your own code as needed. A few things to note ...</p>
+<pre><code>
+str(decodedJson['data']['{yourKey}']) #Cast the value as a string which is sometimes necessary for labels
+(1 if decodedJson['data']['{booleanKey}'] else 0) #Python shorthand for converting a boolean value to a 0 / 1 numerical value
+SendDeviceMessage("/{whatever}/string", "Name") #These are addresses I added in TouchOSC to represent the display label for a slider or button.
+SecondsToString(324.123) #This is a custom method to display a numerical time value as a time string that looks similar to Qlab's time string
+</code></pre>
+<p>You'll also notice that SliderLevels are in a seperate if-then block. This helps seperate the logic in the code. You'll also notice that the sliders only handle 0-8 (master and the first 8 sliders). There were performance issues where cues with audio levels would not update other basic information. Minimizing the sliders made for less traffic and fewer problems.</p>
 
 <h3>
 <a name="support-or-contact" class="anchor" href="#support-or-contact"><span class="octicon octicon-link"></span></a>Support or Contact.</h3>
