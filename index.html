@@ -65,9 +65,14 @@ From here, you can open the python script (TouchQlab.py), alter, edit and run th
 
 <p>The script will detect open Qlab Workspaces and grab hold of the first one it detects. Once this is done you can use the SendQlabMessage function to send Qlab messages. Simply give it an OSC message and values. If you're unsure what OSC message Qlab will accept, visit <a href="http://figure53.com/qlab/docs/osc-api/">Figure53's OSC API.</a> Here are a few examples of sending  </p>
 <pre><code>
-SendQlabMessage("/go", None) #Send Qlab the GO command for the currently selected cue
-SendQlabMessage("/cue/selected/name", "Some New Name") #Set the name of the currently selected cue
-SendQlabMessage("/cue/selected/sliderLevel, (0, -20)) #Set the master fader of the currently selected cue to -20dB. Multiple values can be sent as a tuple
+ #Send Qlab the GO command for the currently selected cue
+SendQlabMessage("/go", None) 
+
+ #Set the name of the currently selected cue
+SendQlabMessage("/cue/selected/name", "Some New Name") 
+
+ #Set the master fader of the currently selected cue to -20dB. Multiple values can be sent as a tuple
+SendQlabMessage("/cue/selected/sliderLevel, (0, -20)) 
 </code></pre>
 
 <h3>
@@ -75,8 +80,11 @@ SendQlabMessage("/cue/selected/sliderLevel, (0, -20)) #Set the master fader of t
 
 <p>After having found a Qlab Workspace, the script will listen for a device such as TouchOSC. To grab hold of the device IP, the script simply needs to hear a command, any command, then you can begin sending messages back to the device. Here are some examples </p>
 <pre><code>
-SendDeviceMessage("/cue/selected/name", "Some New Name") #Display the name in the label with the address "/cue/selected/name"
-SendQlabMessage("/cue/selected/translation", (15.4, -20)) #Set the XY-Fader position. Multiple values can be sent as a tuple
+ #Display the name in the label with the address "/cue/selected/name"
+SendDeviceMessage("/cue/selected/name", "Some New Name") 
+
+ #Set the XY-Fader position. Multiple values can be sent as a tuple
+SendQlabMessage("/cue/selected/translation", (15.4, -20))
 </code></pre>
 
 <h3>
@@ -101,10 +109,17 @@ elif (("/previous" in addr) or
 <p>This is the handler that sends commands back to your device. This is the portion that simplifies Qlab's response so that your device can understand the data being returned. Whenever an update occurs in Qlab, this script will request new data via the RequestValuesForKeys() method (found at the top of the script). The keys requested is by no means a comprehensive list. Feel free to add keys to this list as needed.</p>
 <p>The reply is then divvied in the "/valuesForKeys" section of this function. The JSON code is decoded and parsed for each individual key. The value is then sent as a simple message back to the device. Add your own code as needed. A few things to note ...</p>
 <pre><code>
-str(decodedJson['data']['{yourKey}']) #Cast the value as a string which is sometimes necessary for labels
-(1 if decodedJson['data']['{booleanKey}'] else 0) #Python shorthand for converting a boolean value to a 0 / 1 numerical value
-SendDeviceMessage("/{whatever}/string", "Name") #These are addresses I added in TouchOSC to represent the display label for a slider or button.
-SecondsToString(324.123) #This is a custom method to display a numerical time value as a time string that looks similar to Qlab's time string
+ #Cast the value as a string which is sometimes necessary for labels
+str(decodedJson['data']['{yourKey}'])
+
+ #Python shorthand for converting a boolean value to a 0 / 1 numerical value
+(1 if decodedJson['data']['{booleanKey}'] else 0)
+
+ #These are addresses I added in TouchOSC to represent the display label for a slider or button.
+SendDeviceMessage("/{whatever}/string", "Name")
+
+ #This is a custom method to display a numerical time value as a time string that looks similar to Qlab's time string
+SecondsToString(324.123)
 </code></pre>
 <p>You'll also notice that SliderLevels are in a seperate if-then block. This helps seperate the logic in the code. You'll also notice that the sliders only handle 0-8 (master and the first 8 sliders). There were performance issues where cues with audio levels would not update other basic information. Minimizing the sliders made for less traffic and fewer problems.</p>
 
