@@ -39,6 +39,7 @@
 <a name="support-or-contact" class="anchor" href="#support-or-contact"><span class="octicon octicon-link"></span></a>Running and Customizing.</h3>
 <p>The first thing to note is that TouchQlab uses ports 54000 (Listen) and 54001 (Respond) for communication. This is meant to mirror Qlab's 53000 and 53001 ports.</p>
 <p>Second, all device messages are sent to Qlab. Message are sent back to the device upon Qlab's "Update" reply (this occurs when anything is changed).</p>
+<p>You'll of course need some device to converse with Qlab. I've uploaded an example of a TouchOSC layout I created. Feel free to adjust as necessary.</p>
 <p>Currently, to run the code you'll need to open the script in IDLE and manually run the script. While you're there, feel free to <a href="https://github.com/Archiedestructo/TouchQlab">visit the GitHub page</a> or <a href="https://github.com/Archiedestructo/TouchQlab/zipball/master">download the Zip</a> and alter any code you want. Everything is written in python which can be edited via IDLE. After downloading the code you'll need to install one python library.
 <br/><br/>
 Open Applications/Utilities/Terminal and copy-paste each command one by one.</p>
@@ -57,7 +58,7 @@ $ sudo python setup.py install
 $ sudo IDLE
  * You'll need to enter your password here *
 </code></pre>
-From here, you can open the python script (OSC Script.py), alter, edit and run the code. 
+From here, you can open the python script (TouchQlab.py), alter, edit and run the code. 
 
 <h3>
 <a name="support-or-contact" class="anchor" href="#support-or-contact"><span class="octicon octicon-link"></span></a>Functions - SendQlabMessage(message, values)</h3>
