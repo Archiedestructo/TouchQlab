@@ -32,13 +32,13 @@
       <section>
         <h3>
 <a id="welcome-to-github-pages" class="anchor" href="#welcome-to-github-pages" aria-hidden="true"><span class="octicon octicon-link"></span></a>Welcome to TouchQlab.</h3>
-<p>This is an application to work alongside QLab. It is written by a QLab evangelist, <i>not</i> by Figure53. It can be used to perform tasks and call scripts that QLab is currently not meant to do (i.e. UDP, telnet, terminal commands), and because it's a separate application, heavier processes will not cause QLab to hang (For example, a tTelnet command to shutter a projector will not cause dropped frames in a video running in QLab).
+<p>This is an application to work alongside QLab. It is written by a QLab evangelist, <i>not</i> by Figure53. Qlab's OSC response format is in JSON, not simple responses. This means when an application such as TouchOSC recieves a response from Qlab, it will be unable to parse the information and do anything intelligent with it. The purpose of this application is then to simplify and moderate the communication back and forth between Qlab and another OSC application; creating bidirectional communication. 
 <br/><br/>
 
 <h3>
-<a name="support-or-contact" class="anchor" href="#support-or-contact"><span class="octicon octicon-link"></span></a>Customize.</h3>
+<a name="support-or-contact" class="anchor" href="#support-or-contact"><span class="octicon octicon-link"></span></a>Running and Customizing.</h3>
 
-<p>Feel free to <a href="https://github.com/Archiedestructo/TouchQlab">visit the GitHub page</a> or <a href="https://github.com/Archiedestructo/TouchQlab/zipball/master">download the Zip</a> and alter any code you want. Everything is written in python which can be edited via IDLE. After downloading the code you'll need to install one python library.
+<p>Currently, to run the code you'll need to open the script in IDLE and manually run the script. While you're there, feel free to <a href="https://github.com/Archiedestructo/TouchQlab">visit the GitHub page</a> or <a href="https://github.com/Archiedestructo/TouchQlab/zipball/master">download the Zip</a> and alter any code you want. Everything is written in python which can be edited via IDLE. After downloading the code you'll need to install one python library.
 <br/><br/>
 Open Applications/Utilities/Terminal and copy-paste each command one by one.</p>
 <div class="CommandHeader">Install PyOSC</div>
@@ -57,6 +57,17 @@ $ sudo IDLE
  * You'll need to enter your password here *
 </code></pre>
 From here, you can open the python script (OSC Script.py), alter, edit and run the code. 
+
+<h3>
+<a name="support-or-contact" class="anchor" href="#support-or-contact"><span class="octicon octicon-link"></span></a>Functions - SendQlabMessage(message, values) and SendDeviceMessage(message, values)</h3>
+
+<p>The script will detect open Qlab Workspaces and grab hold of the first one it detects. Once this is done you can use the SendQlabMessage function to send Qlab messages. Simply give it an OSC message and values. If you're unsure what OSC message Qlab will accept, visit <a href="http://figure53.com/qlab/docs/osc-api/">Figure53's OSC API.</a> Here are a few examples of sending  </p>
+<pre><code>
+SendQlabMessage("/go", None) #Send Qlab the GO command for the currently selected cue
+SendQlabMessage("/cue/selected/name", "Some New Name") #Set the name of the currently selected cue
+SendQlabMessage("/cue/selected/name", "Some New Name") #Set the name of the currently selected cue
+SendQlabMessage("/cue/selected/sliderLevel, (0, -20)) #Set the master fader of the currently selected cue to -20dB. Multiple values can be sent as a tuple
+</code></pre>
 
 <h3>
 <a name="support-or-contact" class="anchor" href="#support-or-contact"><span class="octicon octicon-link"></span></a>Support or Contact.</h3>
